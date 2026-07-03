@@ -110,10 +110,16 @@
     render();
   }
 
-  /** Met une anomalie en surbrillance forte et centre la page dessus. */
-  function showOne(id, issues, label) {
+  /**
+   * Met une anomalie en surbrillance forte et centre la page dessus.
+   * Par défaut, seule cette anomalie est affichée (les autres repères sont
+   * masqués) ; passez keepOthers=true pour garder toutes les anomalies
+   * visibles en arrière-plan (mode "vue d'ensemble").
+   */
+  function showOne(id, issues, label, keepOthers) {
     ensureHost();
-    currentIssues = issues.map((i) => ({
+    const base = keepOthers ? issues : issues.filter((i) => i.id === id);
+    currentIssues = base.map((i) => ({
       ...i,
       active: i.id === id,
       label: i.id === id ? label : undefined,

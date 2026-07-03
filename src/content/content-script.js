@@ -29,7 +29,7 @@
         return false;
       }
       case "RGAA_SHOW_ONE": {
-        NS.overlay.showOne(message.id, NS.getIssuesForOverlay(), message.label);
+        NS.overlay.showOne(message.id, NS.getIssuesForOverlay(), message.label, message.keepOthers);
         sendResponse({ ok: true });
         return false;
       }

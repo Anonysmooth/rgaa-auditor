@@ -136,7 +136,23 @@ async function highlightOne(issue) {
       type: "RGAA_SHOW_ONE",
       id: issue.id,
       label: `${issue.code || ""} ${issue.title}`.trim(),
+      keepOthers: els.showAllToggle.checked,
     });
+  } catch (e) {
+    // ignore : l'utilisateur a peut-être changé d'onglet
+  }
+}
+
+/** Revient à l'état de repères attendu quand plus rien n'est survolé/épinglé. */
+async function resetOverlayToBaseState() {
+  try {
+    const tab = await getActiveTab();
+    if (!tab || !tab.id) return;
+    if (els.showAllToggle.checked) {
+      await sendToTab(tab.id, { type: "RGAA_SHOW_ALL" });
+    } else {
+      await sendToTab(tab.id, { type: "RGAA_CLEAR_OVERLAY" });
+    }
   } catch (e) {
     // ignore : l'utilisateur a peut-être changé d'onglet
   }
@@ -227,14 +243,24 @@ function renderIssueCard(issue) {
   li.addEventListener("mouseenter", () => {
     if (!state.pinnedId) highlightOne(issue);
   });
+  li.addEventListener("mouseleave", () => {
+    if (!state.pinnedId) resetOverlayToBaseState();
+  });
   li.addEventListener("focus", () => {
     if (!state.pinnedId) highlightOne(issue);
+  });
+  li.addEventListener("blur", () => {
+    if (!state.pinnedId) resetOverlayToBaseState();
   });
   li.setAttribute("tabindex", "0");
   li.addEventListener("click", () => {
     state.pinnedId = state.pinnedId === issue.id ? null : issue.id;
     renderList();
-    if (state.pinnedId) highlightOne(issue);
+    if (state.pinnedId) {
+      highlightOne(issue);
+    } else {
+      resetOverlayToBaseState();
+    }
   });
   li.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
