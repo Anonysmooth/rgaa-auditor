@@ -23,6 +23,10 @@ visuellement, directement sur la page, les éléments concernés.
   (cadre rouge = erreur, orange = avertissement), avec un mode « afficher
   tous les repères » pour une vue d'ensemble façon inspecteur
   d'accessibilité.
+- **Panneau DevTools** : en plus du panneau latéral, un onglet **RGAA** est
+  disponible dans les outils de développement (`F12`), avec un bouton
+  **Inspecter** sur chaque anomalie qui sélectionne directement l'élément
+  fautif dans l'onglet **Éléments**.
 - Diagnostic **heuristique et local** : aucune donnée ne quitte le
   navigateur, aucun serveur distant n'est utilisé.
 
@@ -39,6 +43,8 @@ Prérequis : Chrome (ou Edge) version 116 ou supérieure (API
 `chrome.sidePanel`).
 
 ## Utilisation
+
+### Panneau latéral
 
 1. Ouvrez la page à auditer.
 2. Cliquez sur l'icône **Auditeur RGAA** : le panneau latéral s'ouvre.
@@ -57,6 +63,18 @@ Prérequis : Chrome (ou Edge) version 116 ou supérieure (API
 Si la page a été rechargée ou a changé d'URL pendant que le panneau était
 ouvert, relancez simplement l'audit.
 
+### Panneau DevTools
+
+1. Ouvrez les outils de développement (`F12` ou clic droit → Inspecter).
+2. Sélectionnez l'onglet **RGAA** (à côté de Éléments, Console, etc.).
+3. Lancez l'audit comme dans le panneau latéral.
+4. Sur chaque carte, un bouton **Inspecter** apparaît à côté du sélecteur :
+   il bascule automatiquement sur l'onglet **Éléments** avec le nœud fautif
+   sélectionné, comme un `inspect()` de la console.
+
+Les deux panneaux partagent la même analyse ; utilisez celui qui convient le
+mieux à votre flux de travail.
+
 ## Limites
 
 Cet outil réalise un **diagnostic automatisé heuristique**. Beaucoup de
@@ -73,9 +91,11 @@ contrôles automatisés implémentés n'a rien trouvé à signaler.
 manifest.json
 src/
   background/service-worker.js   # ouvre le panneau latéral au clic
+  devtools/
+    devtools.html / devtools.js  # déclare l'onglet "RGAA" dans les DevTools
   content/
     content-script.js            # écoute les messages du panneau, orchestre l'analyse
-    analyzer.js                  # agrège les 3 familles de contrôles
+    analyzer.js                  # agrège les 3 familles de contrôles, marque les éléments (data-rgaa-id)
     overlay.js                   # surcouche visuelle (Shadow DOM)
     rgaa-rules.js                # métadonnées des règles (code RGAA, titre, correction)
     checks/
@@ -87,7 +107,7 @@ src/
       dom.js                     # visibilité, nom accessible, focusabilité
       selector.js                # sélecteur CSS lisible pour un élément
   sidepanel/
-    panel.html / panel.css / panel.js   # interface du panneau latéral
+    panel.html / panel.css / panel.js   # interface, réutilisée pour le panneau latéral ET le panneau DevTools
 icons/
 ```
 

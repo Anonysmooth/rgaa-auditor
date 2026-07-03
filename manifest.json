@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Auditeur RGAA",
   "short_name": "Auditeur RGAA",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Audite une page web selon le RGAA : contrastes, navigation clavier et sémantique. Repère les éléments en cause directement sur la page.",
   "icons": {
     "16": "icons/icon16.png",
@@ -25,6 +25,7 @@
   "side_panel": {
     "default_path": "src/sidepanel/panel.html"
   },
+  "devtools_page": "src/devtools/devtools.html",
   "permissions": ["scripting", "sidePanel"],
   "host_permissions": ["<all_urls>"],
   "minimum_chrome_version": "116"

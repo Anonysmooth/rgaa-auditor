@@ -10,7 +10,13 @@
   // id -> élément DOM réel, conservé pour les surbrillances ultérieures.
   const elementsById = new Map();
 
+  const MARKER_ATTR = "data-rgaa-id";
+
   function runAudit() {
+    // Retire les marqueurs posés par un audit précédent avant d'en reposer de nouveaux.
+    for (const el of elementsById.values()) {
+      if (el.removeAttribute) el.removeAttribute(MARKER_ATTR);
+    }
     elementsById.clear();
 
     const rawIssues = [
@@ -21,7 +27,20 @@
 
     const results = rawIssues.map((issue, index) => {
       const id = `issue-${index}`;
-      if (issue.element) elementsById.set(id, issue.element);
+      if (issue.element) {
+        elementsById.set(id, issue.element);
+        // Marqueur stable permettant de retrouver précisément l'élément
+        // depuis le panneau DevTools (chrome.devtools.inspectedWindow.eval),
+        // qui n'a pas accès direct aux références DOM du panneau latéral.
+        // Un même élément pouvant porter plusieurs anomalies (ex. <html> à la
+        // fois sans lang et sans titre associé), les identifiants s'accumulent
+        // séparés par un espace ; on les retrouve individuellement côté panel
+        // avec le sélecteur CSS ~= (correspondance par mot).
+        if (issue.element.setAttribute) {
+          const existing = issue.element.getAttribute(MARKER_ATTR);
+          issue.element.setAttribute(MARKER_ATTR, existing ? `${existing} ${id}` : id);
+        }
+      }
       const rule = RULES[issue.ruleId] || {};
       return {
         id,

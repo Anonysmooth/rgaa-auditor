@@ -1,3 +1,20 @@
+// Attribut posé sur chaque élément fautif par analyzer.js (côté page) afin
+// de pouvoir le retrouver précisément depuis ce panneau, y compris quand il
+// tourne comme panneau DevTools (voir inspectElement ci-dessous).
+const MARKER_ATTR = "data-rgaa-id";
+
+// Ce même fichier panel.html/panel.js est utilisé à la fois comme panneau
+// latéral (chrome.sidePanel) et comme panneau DevTools (chrome.devtools.panels) :
+// chrome.devtools n'est disponible que dans ce second cas.
+function inDevToolsContext() {
+  return (
+    typeof chrome !== "undefined" &&
+    !!chrome.devtools &&
+    !!chrome.devtools.inspectedWindow &&
+    typeof chrome.devtools.inspectedWindow.tabId === "number"
+  );
+}
+
 const CONTENT_FILES = [
   "src/content/utils/dom.js",
   "src/content/utils/color.js",
@@ -41,6 +58,15 @@ function setStatus(message, isError) {
 }
 
 async function getActiveTab() {
+  if (inDevToolsContext()) {
+    // chrome.tabs.get renvoie l'URL/titre de l'onglet inspecté (couverts par
+    // host_permissions), utiles pour le contrôle de page auditable ci-dessous.
+    try {
+      return await chrome.tabs.get(chrome.devtools.inspectedWindow.tabId);
+    } catch (e) {
+      return { id: chrome.devtools.inspectedWindow.tabId };
+    }
+  }
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   return tab;
 }
@@ -158,6 +184,22 @@ async function resetOverlayToBaseState() {
   }
 }
 
+/**
+ * Sélectionne l'élément fautif dans l'onglet "Éléments" des DevTools.
+ * Ne fonctionne que lorsque ce panneau est chargé comme panneau DevTools
+ * (chrome.devtools.inspectedWindow.eval exécute inspect(), l'équivalent de
+ * la fonction de la console qui bascule sur l'onglet Éléments).
+ */
+function inspectElement(issue) {
+  if (!inDevToolsContext()) return;
+  const expr = `inspect(document.querySelector('[${MARKER_ATTR}~="${issue.id}"]'))`;
+  chrome.devtools.inspectedWindow.eval(expr, (result, err) => {
+    if (err && err.isException) {
+      setStatus("Impossible d'ouvrir l'élément dans l'inspecteur : " + err.value, true);
+    }
+  });
+}
+
 function themeCounts() {
   const counts = { all: state.results.length, couleurs: 0, semantique: 0, navigation: 0 };
   for (const r of state.results) {
@@ -230,10 +272,28 @@ function renderIssueCard(issue) {
   li.appendChild(title);
 
   if (issue.selector) {
+    const selRow = document.createElement("div");
+    selRow.className = "issue-selector-row";
+
     const sel = document.createElement("p");
     sel.className = "issue-selector";
     sel.textContent = `<${issue.tag}> ${issue.selector}`;
-    li.appendChild(sel);
+    selRow.appendChild(sel);
+
+    if (inDevToolsContext()) {
+      const inspectBtn = document.createElement("button");
+      inspectBtn.type = "button";
+      inspectBtn.className = "inspect-btn";
+      inspectBtn.textContent = "Inspecter";
+      inspectBtn.title = "Sélectionner cet élément dans l'onglet Éléments";
+      inspectBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        inspectElement(issue);
+      });
+      selRow.appendChild(inspectBtn);
+    }
+
+    li.appendChild(selRow);
   }
 
   if (state.pinnedId === issue.id) {
