@@ -4,7 +4,6 @@
   "short_name": "Auditeur RGAA",
   "version": "0.1.0",
   "description": "Audite une page web selon le RGAA : contrastes, navigation clavier et sémantique. Repère les éléments en cause directement sur la page.",
-  "default_locale": "fr",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
