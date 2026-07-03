@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Auditeur RGAA</title>
+    <link rel="stylesheet" href="panel.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="app-title">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <h1>Auditeur RGAA</h1>
+          <p class="page-info" id="pageInfo">Aucune page auditée</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <button id="runBtn" class="btn btn-primary" type="button">Lancer l'audit</button>
+      <label class="toggle">
+        <input type="checkbox" id="showAllToggle" />
+        <span>Repères sur la page</span>
+      </label>
+      <button id="clearBtn" class="btn btn-ghost" type="button" title="Effacer les repères visuels">
+        Effacer
+      </button>
+    </div>
+
+    <div id="status" class="status" hidden></div>
+
+    <section class="summary" id="summary" hidden>
+      <button class="theme-card" data-theme="all" type="button">
+        <span class="theme-count" id="countAll">0</span>
+        <span class="theme-label">Tous</span>
+      </button>
+      <button class="theme-card" data-theme="couleurs" type="button">
+        <span class="theme-count" id="countCouleurs">0</span>
+        <span class="theme-label">Couleurs</span>
+      </button>
+      <button class="theme-card" data-theme="semantique" type="button">
+        <span class="theme-count" id="countSemantique">0</span>
+        <span class="theme-label">Sémantique</span>
+      </button>
+      <button class="theme-card" data-theme="navigation" type="button">
+        <span class="theme-count" id="countNavigation">0</span>
+        <span class="theme-label">Navigation</span>
+      </button>
+    </section>
+
+    <section class="severity-filter" id="severityFilter" hidden>
+      <button class="chip active" data-severity="all" type="button">Tout</button>
+      <button class="chip" data-severity="erreur" type="button">Erreurs</button>
+      <button class="chip" data-severity="avertissement" type="button">Avertissements</button>
+    </section>
+
+    <main>
+      <ul id="issueList" class="issue-list"></ul>
+      <p id="emptyState" class="empty-state">
+        Cliquez sur « Lancer l'audit » pour analyser les contrastes, la
+        sémantique et la navigation clavier de la page affichée.
+      </p>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        Diagnostic heuristique basé sur le RGAA 4.1 — ne remplace pas un audit
+        RGAA complet réalisé par un expert.
+      </p>
+    </footer>
+
+    <script src="panel.js"></script>
+  </body>
+</html>

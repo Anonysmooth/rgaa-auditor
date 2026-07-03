@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Auditeur RGAA",
+  "short_name": "Auditeur RGAA",
+  "version": "0.1.0",
+  "description": "Audite une page web selon le RGAA : contrastes, navigation clavier et sémantique. Repère les éléments en cause directement sur la page.",
+  "default_locale": "fr",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Ouvrir l'auditeur RGAA"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/panel.html"
+  },
+  "permissions": ["scripting", "sidePanel"],
+  "host_permissions": ["<all_urls>"],
+  "minimum_chrome_version": "116"
+}
