@@ -34,9 +34,9 @@
         border-radius: 3px;
         pointer-events: none;
       }
-      .box.erreur { border-color: #e11d48; background: rgba(225,29,72,0.10); }
-      .box.avertissement { border-color: #f59e0b; background: rgba(245,158,11,0.10); }
-      .box.active { border-width: 3px; box-shadow: 0 0 0 3px rgba(37,99,235,.5); }
+      .box.erreur { border-color: #e11d48; }
+      .box.avertissement { border-color: #f59e0b; }
+      .box.active { border-width: 3px; box-shadow: 0 0 0 3px rgba(37,99,235,.5); background: rgba(37,99,235,.12); }
       .label {
         position: fixed;
         transform: translateY(-100%);
